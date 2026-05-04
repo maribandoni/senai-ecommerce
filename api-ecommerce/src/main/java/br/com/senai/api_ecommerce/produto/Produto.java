@@ -1,5 +1,6 @@
 package br.com.senai.api_ecommerce.produto;
 
+import br.com.senai.api_ecommerce.categoria.Categoria;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -22,5 +23,39 @@ public class Produto {
     private BigDecimal preco;
     private String sku;
     private String descricao;
-    private int estoque;
+    private Long estoque;
+    private boolean ativo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
+
+    public Produto(DadosCadastroProduto dados, Categoria categoria) {
+        this.nome = dados.nome();
+        this.preco = dados.preco();
+        this.sku = dados.sku();
+        this.descricao = dados.descricao();
+        this.estoque = dados.estoque();
+        this.categoria = categoria;
+        this.ativo = true;
+    }
+
+    public void excluirProduto() {
+        this.ativo = false;
+    }
+
+    public void atualizarProduto(DadosAtualizarProduto dados, Categoria categoria) {
+        if(dados.nome() != null && !dados.nome().isBlank())
+            this.nome = dados.nome();
+        if(dados.preco() != null)
+            this.preco = dados.preco();
+        if(dados.sku() != null && !dados.sku().isBlank())
+            this.sku = dados.sku();
+        if(dados.descricao() != null && !dados.descricao().isBlank())
+            this.descricao = dados.descricao();
+        if(dados.estoque() != null)
+            this.estoque = dados.estoque();
+        if(categoria != null)
+            this.categoria = categoria;
+    }
 }
